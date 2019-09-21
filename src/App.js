@@ -1,13 +1,15 @@
 import React from "react";
 import "./App.css";
 import Nabvar from "./components/layout/Nabvar";
-import UserItem from "./components/users/UserItem";
+import Users from "./components/users/Users";
 
 function App() {
   return (
     <div className='App'>
       <Nabvar />
-      <UserItem />
+      <div className='container'>
+        <Users />
+      </div>
     </div>
   );
 }
