@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import axios from "axios";
 
 import "./App.css";
@@ -6,10 +7,13 @@ import Nabvar from "./components/layout/Nabvar";
 import Users from "./components/users/Users";
 import Search from "./components/layout/Search";
 import Alert from "./components/layout/Alert";
+import About from "./components/pages/About";
+import User from "./components/users/User";
 
 class App extends Component {
   state = {
     loading: false,
+    user: {},
     showButton: false,
     users: [],
     alert: null
@@ -28,6 +32,19 @@ class App extends Component {
       showButton: true
     });
   };
+  // Get a single User
+  getUser = async userName => {
+    this.setState({ loading: true });
+    const user = await axios.get(
+      `https://api.github.com/users/${userName}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}
+        }`
+    );
+    this.setState({
+      loading: false,
+      user: user.data
+    });
+  };
+
   clearSearch = () => {
     this.setState({ users: [], showButton: false });
   };
@@ -38,21 +55,46 @@ class App extends Component {
   };
 
   render() {
-    const { showButton, loading, users } = this.state;
+    const { showButton, loading, users, user } = this.state;
     return (
-      <div className='App'>
-        <Nabvar />
-        <div className='container'>
-          <Alert alert={this.state.alert} />
-          <Search
-            handleSearchUsers={this.handleSearchUsers}
-            showButton={showButton}
-            clearSearch={this.clearSearch}
-            setAlert={this.setAlert}
-          />
-          <Users loading={loading} users={users} />
+      <Router>
+        <div className='App'>
+          <Nabvar />
+          <div className='container'>
+            <Switch>
+              <Route
+                exact
+                path='/'
+                render={props => (
+                  <Fragment>
+                    <Alert alert={this.state.alert} />
+                    <Search
+                      handleSearchUsers={this.handleSearchUsers}
+                      showButton={showButton}
+                      clearSearch={this.clearSearch}
+                      setAlert={this.setAlert}
+                    />
+                    <Users loading={loading} users={users} />
+                  </Fragment>
+                )}
+              />
+              <Route exact path='/about' component={About} />
+              <Route
+                exact
+                path='/user/:login'
+                render={props => (
+                  <User
+                    {...props}
+                    getUser={this.getUser}
+                    user={user}
+                    loading={loading}
+                  />
+                )}
+              />
+            </Switch>
+          </div>
         </div>
-      </div>
+      </Router>
     );
   }
 }
