@@ -16,6 +16,7 @@ class App extends Component {
     user: {},
     showButton: false,
     users: [],
+    userRepos: [],
     alert: null
   };
 
@@ -45,6 +46,17 @@ class App extends Component {
     });
   };
 
+  // Get user Repos
+  getRepos = async userName => {
+    const userRepos = await axios.get(
+      `https://api.github.com/users/${userName}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}
+        }`
+    );
+    this.setState({
+      userRepos: userRepos.data
+    });
+  };
+
   clearSearch = () => {
     this.setState({ users: [], showButton: false });
   };
@@ -55,7 +67,7 @@ class App extends Component {
   };
 
   render() {
-    const { showButton, loading, users, user } = this.state;
+    const { showButton, loading, users, user, userRepos } = this.state;
     return (
       <Router>
         <div className='App'>
@@ -88,6 +100,8 @@ class App extends Component {
                     getUser={this.getUser}
                     user={user}
                     loading={loading}
+                    userRepos={userRepos}
+                    getRepos={this.getRepos}
                   />
                 )}
               />
