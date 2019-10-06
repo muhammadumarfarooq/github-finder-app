@@ -1,12 +1,14 @@
-import React from "react";
-
-import propTypes from "prop-types";
+import React, { useContext } from "react";
 
 import UserItem from "./UserItem";
 import Loader from "../layout/Loader";
 
-const Users = ({ loading, users }) => {
-  if (loading) {
+import GithubContext from "../../context/github/githubContext";
+
+const Users = () => {
+  const githubContext = useContext(GithubContext);
+  const { users } = githubContext;
+  if (githubContext.loading) {
     return <Loader />;
   } else {
     return (
@@ -23,11 +25,6 @@ const style = {
   display: "grid",
   gridTemplateColumns: "repeat(3, 1fr)",
   gridGap: "1rem"
-};
-
-Users.propTypes = {
-  loading: propTypes.bool.isRequired,
-  users: propTypes.array.isRequired
 };
 
 export default Users;
